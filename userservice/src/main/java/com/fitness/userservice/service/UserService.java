@@ -1,0 +1,51 @@
+package com.fitness.userservice.service;
+
+import com.fitness.userservice.dto.RegisterRequest;
+import com.fitness.userservice.dto.UserResponse;
+import com.fitness.userservice.model.User;
+import com.fitness.userservice.repository.UserRepo;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserService {
+
+    @Autowired
+    UserRepo userRepo;
+
+    public UserResponse register(@Valid RegisterRequest request) {
+
+        if(userRepo.existsByEmail(request.getEmail())){
+            throw new RuntimeException("Email already in use");
+        }
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setPassword(request.getPassword());
+
+        User saveUser=userRepo.save(user);
+
+        return getUserResponse(saveUser);
+    }
+
+    public UserResponse getUserProfile(String userId) {
+
+        User user=userRepo.findById(userId)
+                .orElseThrow(()-> new RuntimeException("User not found"));
+        return getUserResponse(user);
+    }
+
+    private UserResponse getUserResponse(User user) {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setFirstName(user.getFirstName());
+        userResponse.setLastName(user.getLastName());
+        userResponse.setPassword(user.getPassword());
+        userResponse.setCreated(user.getCreated());
+        userResponse.setUpdated(user.getUpdated());
+        return userResponse;
+    }
+}
