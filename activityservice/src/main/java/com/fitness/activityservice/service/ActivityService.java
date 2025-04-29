@@ -4,21 +4,36 @@ package com.fitness.activityservice.service;
 import com.fitness.activityservice.ActivityRepository;
 import com.fitness.activityservice.dto.ActivityRequest;
 import com.fitness.activityservice.dto.ActivityResponse;
+import com.fitness.activityservice.exception.NotValidUserException;
 import com.fitness.activityservice.exception.ResourceNotFoundException;
 import com.fitness.activityservice.model.Activity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ActivityService {
     final ActivityRepository activityRepository;
+    final ValidateUserService validateUserService;
+    final RabbitTemplate rabbitTemplate;
+
+    @Value("${rabbitmq.exchange.name}")
+    private String exchange;
+    @Value("${rabbitmq.routing.key}")
+    private String routing;
 
     public ActivityResponse trackActivity(ActivityRequest request) {
-
+        Boolean isValid=validateUserService.validateUserByUserId(request.getUserId());
+        if(!isValid){
+            throw new NotValidUserException("No user found with id:"+request.getUserId());
+        }
         Activity activity=Activity .builder()
                 .userId(request.getUserId())
                 .type(request.getActivityType())
@@ -28,6 +43,11 @@ public class ActivityService {
                 .additionalMetrics(request.getAdditionalMatrics())
                 .build();
         Activity saveActivity=activityRepository.save(activity);
+        try{
+            rabbitTemplate.convertAndSend(exchange, routing, saveActivity);
+        }catch(Exception e){
+            log.error("failed to upload to RabbitMQ");
+        }
         return toResponseActivity(saveActivity);
     }
 

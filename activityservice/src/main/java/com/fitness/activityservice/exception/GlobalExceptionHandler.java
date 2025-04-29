@@ -14,4 +14,10 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse=new ErrorResponse(message,"failed");
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(NotValidUserException.class)
+    public ResponseEntity<ErrorResponse> notValidUserErrorHandler(NotValidUserException ex){
+        String message = ex.getMessage();
+        ErrorResponse errorResponse=new ErrorResponse(message,"failed");
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }
