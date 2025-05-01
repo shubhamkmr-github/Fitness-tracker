@@ -14,7 +14,24 @@ spring:
       serviceUrl:
         defaultZone: http://localhost:8761/
 
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+rabbitmq:
+  exchange:
+    name: fitness.exchange
+  queue:
+    name: activity.queue
+  routing:
+    key: activity.tracker
 
 server:
   port: 8083
 
+gemini:
+  api:
+    uri: ${GEMINI_API_URL}
+    key: ${GEMINI_API_KEY}
