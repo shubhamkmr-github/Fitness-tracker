@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface RecommendationRepo extends MongoRepository<Recommendation, String> {
 
 
-    Optional<Recommendation> findByactivityId(String activityId);
+    Optional<Recommendation> findByActivityId(String activityId);
 
-    List<Recommendation> findByuserId(String userId);
+    List<Recommendation> findByUserId(String userId);
 }
