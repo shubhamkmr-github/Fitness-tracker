@@ -2,6 +2,7 @@ package com.fitness.aiservice.service;
 
 
 import com.fitness.aiservice.Repo.RecommendationRepo;
+import com.fitness.aiservice.exception.ResourceNotFoundException;
 import com.fitness.aiservice.model.Recommendation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,6 @@ public class RecommendationService {
 
     public Recommendation getActivityRecommendation(String activityId) {
         return recommendationRepo.findByActivityId(activityId)
-                .orElseThrow(()->new RuntimeException("no activity found"));
+                .orElseThrow(()->new ResourceNotFoundException("Activity not found"));
     }
 }
