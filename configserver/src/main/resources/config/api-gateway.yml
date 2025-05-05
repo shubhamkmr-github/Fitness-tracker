@@ -2,6 +2,11 @@ server:
   port: 9090
 
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8181/realms/fitness-oauth2/protocol/openid-connect/certs
   cloud:
     gateway:
       routes:
@@ -19,8 +24,6 @@ spring:
           uri: lb://ACTIVITY-SERVICE
           predicates:
             - Path=/api/activity/**
-
-
     eureka:
       client:
         register-with-eureka: true
