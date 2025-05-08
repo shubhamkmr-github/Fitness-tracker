@@ -1,4 +1,5 @@
-package com.fitness.userservice.dto;
+package com.fitness.gateway.user;
+
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,14 +8,17 @@ import lombok.Data;
 
 @Data
 public class RegisterRequest {
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
+    private String email;
+
+    @NotBlank(message = "Password is required")
+    @Size(min = 6, message = "Password must have atleast 6 characters")
+    private String password;
+
+    private String keycloakId;
 
     private String firstName;
     private String lastName;
-    private String keyCloakId;
-    @NotBlank(message = "Email is required")
-    @Email(message = "invalid email")
-    private String email;
-    @NotBlank(message = "password cannot be blank")
-    @Size(min = 8,message = "password cannot be less than 8 characters")
-    private String password;
+
 }

@@ -1,10 +1,19 @@
 package com.fitness.userservice.repository;
 
+import com.fitness.userservice.dto.UserResponse;
 import com.fitness.userservice.model.User;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, String> {
     boolean existsByEmail( String email);
+
+    Boolean existsByKeyCloakId(String userId);
+
+    UserResponse findByEmail(@NotBlank(message = "Email is required") @Email(message = "invalid email") String email);
+
+    User getUserByEmail(@NotBlank(message = "Email is required") @Email(message = "invalid email") String email);
 }

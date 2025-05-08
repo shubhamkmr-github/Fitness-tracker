@@ -2,15 +2,12 @@ package com.fitness.userservice.service;
 
 import com.fitness.userservice.dto.RegisterRequest;
 import com.fitness.userservice.dto.UserResponse;
-import com.fitness.userservice.exception.ExistingUserException;
 import com.fitness.userservice.exception.ResourceNotFoundException;
 import com.fitness.userservice.model.User;
 import com.fitness.userservice.repository.UserRepo;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.nio.file.ReadOnlyFileSystemException;
 
 @Service
 public class UserService {
@@ -21,7 +18,7 @@ public class UserService {
     public UserResponse register(@Valid RegisterRequest request) {
 
         if(userRepo.existsByEmail(request.getEmail())){
-            throw  new ExistingUserException("user already exists");
+            return getUserResponse(userRepo.getUserByEmail(request.getEmail()));
         }
         User user = new User();
         user.setEmail(request.getEmail());
@@ -41,9 +38,17 @@ public class UserService {
         return getUserResponse(user);
     }
 
+    public Boolean existByUserId(String userId) {
+        return userRepo.existsByKeyCloakId(userId);
+    }
+
+
+
+    //setting userResponse helper
     private UserResponse getUserResponse(User user) {
         UserResponse userResponse = new UserResponse();
         userResponse.setId(user.getId());
+        userResponse.setKeyCloakId(user.getKeyCloakId());
         userResponse.setEmail(user.getEmail());
         userResponse.setFirstName(user.getFirstName());
         userResponse.setLastName(user.getLastName());
@@ -53,7 +58,5 @@ public class UserService {
         return userResponse;
     }
 
-    public Boolean existByUserId(String userId) {
-        return userRepo.existsById(userId);
-    }
+
 }
