@@ -6,9 +6,11 @@ import com.fitness.userservice.exception.ResourceNotFoundException;
 import com.fitness.userservice.model.User;
 import com.fitness.userservice.repository.UserRepo;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class UserService {
 
@@ -16,12 +18,14 @@ public class UserService {
     UserRepo userRepo;
 
     public UserResponse register(@Valid RegisterRequest request) {
-
+        log.info("Registering new user register service");
         if(userRepo.existsByEmail(request.getEmail())){
             return getUserResponse(userRepo.getUserByEmail(request.getEmail()));
         }
         User user = new User();
+        log.info(request.getKeycloakId());
         user.setEmail(request.getEmail());
+        user.setKeycloakId(request.getKeycloakId());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setPassword(request.getPassword());
@@ -39,7 +43,7 @@ public class UserService {
     }
 
     public Boolean existByUserId(String userId) {
-        return userRepo.existsByKeyCloakId(userId);
+        return userRepo.existsByKeycloakId(userId);
     }
 
 
@@ -48,7 +52,7 @@ public class UserService {
     private UserResponse getUserResponse(User user) {
         UserResponse userResponse = new UserResponse();
         userResponse.setId(user.getId());
-        userResponse.setKeyCloakId(user.getKeyCloakId());
+        userResponse.setKeycloakId(user.getKeycloakId());
         userResponse.setEmail(user.getEmail());
         userResponse.setFirstName(user.getFirstName());
         userResponse.setLastName(user.getLastName());

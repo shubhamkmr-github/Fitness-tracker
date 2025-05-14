@@ -10,7 +10,7 @@ public class RegisterRequest {
 
     private String firstName;
     private String lastName;
-    private String keyCloakId;
+    private String keycloakId;
     @NotBlank(message = "Email is required")
     @Email(message = "invalid email")
     private String email;
